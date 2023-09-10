@@ -38,7 +38,7 @@ public:
     if (not leet::any(flowerbed, OCCUPIED)) {
       switch (n) {
       case 1: return not flowerbed.empty();
-      default: return flowerbed.size() >= 2 * n - 1;
+      default: return flowerbed.size() >= 2 * static_cast<unsigned long long>(n) - 1;
       }
     }
 
