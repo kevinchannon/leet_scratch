@@ -35,6 +35,10 @@ public:
   using flowerbed_t = std::vector<int>;
 
   bool canPlaceFlowers(const flowerbed_t& flowerbed, int n) {
+    if (n == 0) {
+      return true;
+    }
+
     if (not leet::any(flowerbed, OCCUPIED)) {
       switch (n) {
       case 1: return not flowerbed.empty();
@@ -55,6 +59,12 @@ public:
     return true;
   }
 };
+
+// ZERO FLOWER PLACEMENT
+TEST_CASE("Can place ZERO new flower in size 1, empty") { REQUIRE(Solution{}.canPlaceFlowers({ 0 }, 0)); }
+TEST_CASE("Can place ZERO new flower in size 1, full") { REQUIRE(Solution{}.canPlaceFlowers({ 1 }, 0)); }
+TEST_CASE("Can place ZERO new flower in size 2, full") { REQUIRE(Solution{}.canPlaceFlowers({ 1, 1 }, 0)); }
+TEST_CASE("Can place ZERO new flower in size 3, full") { REQUIRE(Solution{}.canPlaceFlowers({ 1, 1, 1 }, 0)); }
 
 // SINGLE FLOWER PLACEMENT
 TEST_CASE("Can place ONE new flower in size 1, empty") { REQUIRE(Solution{}.canPlaceFlowers({ 0 }, 1)); }
