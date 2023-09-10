@@ -72,4 +72,5 @@ TEST_CASE("Cannot place ONE new flower in size 3, flowers in 1st") { REQUIRE_FAL
 // TWO FLOWERS PLACED
 TEST_CASE("Can place TWO new flower in size 3, empty") { REQUIRE(Solution{}.canPlaceFlowers({ 0, 0, 0 }, 2)); }
 
+TEST_CASE("Cannot place TWO new flower in size 1, empty") { REQUIRE_FALSE(Solution{}.canPlaceFlowers({ 0, 0 }, 2)); }
 TEST_CASE("Cannot place TWO new flower in size 2, empty") { REQUIRE_FALSE(Solution{}.canPlaceFlowers({ 0, 0 }, 2)); }
