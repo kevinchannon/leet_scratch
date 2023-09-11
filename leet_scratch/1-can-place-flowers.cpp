@@ -26,37 +26,75 @@ namespace leet {
 }
 
 class Solution {
-  static constexpr auto UNOCCUPIED = 0;
-  static constexpr auto OCCUPIED = 1;
-
-  [[nodiscard]] static bool is_occupied(int val) noexcept { return val == OCCUPIED; }
 public:
 
   using flowerbed_t = std::vector<int>;
 
   bool canPlaceFlowers(const flowerbed_t& flowerbed, int n) {
+    return can_place_flowers(flowerbed.begin(), flowerbed.end(), n);
+  }
+
+private:
+  static constexpr auto UNOCCUPIED = 0;
+  static constexpr auto OCCUPIED = 1;
+
+  template<int STATE>
+  [[nodiscard]] constexpr static bool is(int val) noexcept { return val == STATE; }
+
+  [[nodiscard]] static bool can_place_flowers(flowerbed_t::const_iterator start, flowerbed_t::const_iterator end, int n) {
     if (n == 0) {
       return true;
     }
 
-    if (not leet::any(flowerbed, OCCUPIED)) {
+    if (not std::any_of(start, end, is<OCCUPIED>)) {
       switch (n) {
-      case 1: return not flowerbed.empty();
-      default: return flowerbed.size() >= 2 * static_cast<unsigned long long>(n) - 1;
+      case 1: return std::distance(start, end) > 0;
+      default: return std::distance(start, end) >= 2 * static_cast<unsigned long long>(n) - 1;
       }
     }
 
-    switch (flowerbed.size()) {
+    switch (std::distance(start, end)) {
     case 0:
     case 1:
-    case 2:
-      return false;
-    case 3:
-      return flowerbed == flowerbed_t{ 0, 0, 1 } or flowerbed == flowerbed_t{ 1, 0, 0 };
+    case 2: return false;
+    case 3: return (*start == OCCUPIED) ^ (*std::prev(end) == OCCUPIED);
     default:;
     }
+    
+    auto available_positions = 0;
 
-    return true;
+    if (std::all_of(start, std::next(start, 2), is<UNOCCUPIED>)) {
+      ++available_positions;
+      ++start;
+    }
+
+    while (available_positions < n && start <= std::prev(end)) {
+      const auto next_available = find_next_position(start, end);
+      if (next_available == end) {
+        break;
+      }
+
+      ++available_positions;
+      ++start;
+    }
+
+    return available_positions >= n;
+  }
+
+  [[nodiscard]] static flowerbed_t::const_iterator find_next_position(flowerbed_t::const_iterator start, const flowerbed_t::const_iterator end) {
+    for (auto pos = start; pos != end; ++pos) {
+      const auto next_possible_begin = std::find(pos, end, UNOCCUPIED);
+      if (next_possible_begin == end) {
+        break;
+      }
+
+      const auto next_possible_end = std::find(next_possible_begin, end, OCCUPIED);
+      if (std::distance(next_possible_begin, next_possible_end) >= 3) {
+        return std::next(next_possible_begin);
+      }
+    }
+
+    return end;
   }
 };
 
@@ -72,15 +110,20 @@ TEST_CASE("Can place ONE new flower in size 2, empty") { REQUIRE(Solution{}.canP
 TEST_CASE("Can place ONE new flower in size 3, empty") { REQUIRE(Solution{}.canPlaceFlowers({ 0, 0, 0 }, 1)); }
 TEST_CASE("Can place ONE new flower 3, flowers in 0th") { REQUIRE(Solution{}.canPlaceFlowers({ 1, 0, 0 }, 1)); }
 TEST_CASE("Can place ONE new flower in size 3, flowers in 2nd") { REQUIRE(Solution{}.canPlaceFlowers({ 0, 0, 1 }, 1)); }
+TEST_CASE("Can place ONE new flower gap of three empty slots") { REQUIRE(Solution{}.canPlaceFlowers({ 1, 1, 0, 0, 0, 1 }, 1)); }
+TEST_CASE("Can place ONE new flower gap of 2 at front") { REQUIRE(Solution{}.canPlaceFlowers({ 0, 0, 1, 1, 1, 1 }, 1)); }
 
 TEST_CASE("Cannot place ONE new flower in size 0, flowers in 0th") { REQUIRE_FALSE(Solution{}.canPlaceFlowers({}, 1)); }
 TEST_CASE("Cannot place ONE new flower in size 1, full") { REQUIRE_FALSE(Solution{}.canPlaceFlowers({ 1 }, 1)); }
 TEST_CASE("Cannot place ONE new flower in size 2, flowers in 0th") { REQUIRE_FALSE(Solution{}.canPlaceFlowers({ 1, 0 }, 1)); }
 TEST_CASE("Cannot place ONE new flower in size 2, flowers in 1st") { REQUIRE_FALSE(Solution{}.canPlaceFlowers({ 0, 1 }, 1)); }
 TEST_CASE("Cannot place ONE new flower in size 3, flowers in 1st") { REQUIRE_FALSE(Solution{}.canPlaceFlowers({ 0, 1, 0 }, 1)); }
+TEST_CASE("Cannot place ONE new flower gap of two empty slots") { REQUIRE_FALSE(Solution{}.canPlaceFlowers({ 1, 1, 0, 0, 1, 1 }, 1)); }
 
 // TWO FLOWERS PLACED
 TEST_CASE("Can place TWO new flower in size 3, empty") { REQUIRE(Solution{}.canPlaceFlowers({ 0, 0, 0 }, 2)); }
 
 TEST_CASE("Cannot place TWO new flower in size 1, empty") { REQUIRE_FALSE(Solution{}.canPlaceFlowers({ 0, 0 }, 2)); }
 TEST_CASE("Cannot place TWO new flower in size 2, empty") { REQUIRE_FALSE(Solution{}.canPlaceFlowers({ 0, 0 }, 2)); }
+
+// >2 FLOWERS PLACED
