@@ -78,6 +78,10 @@ private:
       ++start;
     }
 
+    if (is<UNOCCUPIED>(*std::reverse_iterator{ end }) and is<UNOCCUPIED>(*std::next(std::reverse_iterator{ end }))) {
+      ++available_positions;
+    }
+
     return available_positions >= n;
   }
 
@@ -112,6 +116,7 @@ TEST_CASE("Can place ONE new flower 3, flowers in 0th") { REQUIRE(Solution{}.can
 TEST_CASE("Can place ONE new flower in size 3, flowers in 2nd") { REQUIRE(Solution{}.canPlaceFlowers({ 0, 0, 1 }, 1)); }
 TEST_CASE("Can place ONE new flower gap of three empty slots") { REQUIRE(Solution{}.canPlaceFlowers({ 1, 1, 0, 0, 0, 1 }, 1)); }
 TEST_CASE("Can place ONE new flower gap of 2 at front") { REQUIRE(Solution{}.canPlaceFlowers({ 0, 0, 1, 1, 1, 1 }, 1)); }
+TEST_CASE("Can place ONE new flower gap of 2 at end") { REQUIRE(Solution{}.canPlaceFlowers({ 1, 1, 1, 1, 0, 0 }, 1)); }
 
 TEST_CASE("Cannot place ONE new flower in size 0, flowers in 0th") { REQUIRE_FALSE(Solution{}.canPlaceFlowers({}, 1)); }
 TEST_CASE("Cannot place ONE new flower in size 1, full") { REQUIRE_FALSE(Solution{}.canPlaceFlowers({ 1 }, 1)); }
