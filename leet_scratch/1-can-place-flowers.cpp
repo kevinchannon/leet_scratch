@@ -49,7 +49,7 @@ private:
     if (not std::any_of(start, end, is<OCCUPIED>)) {
       switch (n) {
       case 1: return std::distance(start, end) > 0;
-      default: return std::distance(start, end) >= 2 * static_cast<unsigned long long>(n) - 1;
+      default: return static_cast<unsigned long long>(std::distance(start, end)) >= 2 * static_cast<unsigned long long>(n) - 1;
       }
     }
 
@@ -60,7 +60,7 @@ private:
     case 3: return (*start == OCCUPIED) ^ (*std::prev(end) == OCCUPIED);
     default:;
     }
-    
+
     auto available_positions = 0;
 
     if (std::all_of(start, std::next(start, 2), is<UNOCCUPIED>)) {
@@ -126,13 +126,14 @@ TEST_CASE("Cannot place ONE new flower in size 3, flowers in 1st") { REQUIRE_FAL
 TEST_CASE("Cannot place ONE new flower gap of two empty slots") { REQUIRE_FALSE(Solution{}.canPlaceFlowers({ 1, 1, 0, 0, 1, 1 }, 1)); }
 
 // TWO FLOWERS PLACED
-TEST_CASE("Can place TWO new flower in size 3, empty") { REQUIRE(Solution{}.canPlaceFlowers({ 0, 0, 0 }, 2)); }
-TEST_CASE("Can place TWO new flower in with 2 gaps (not at ends)") { REQUIRE(Solution{}.canPlaceFlowers({ 1, 0, 0, 0, 1, 0, 0, 0, 1 }, 2)); }
+TEST_CASE("Can place TWO new flowers in size 3, empty") { REQUIRE(Solution{}.canPlaceFlowers({ 0, 0, 0 }, 2)); }
+TEST_CASE("Can place TWO new flowers in with 2 gaps (not at ends)") { REQUIRE(Solution{}.canPlaceFlowers({ 1, 0, 0, 0, 1, 0, 0, 0, 1 }, 2)); }
+TEST_CASE("Can place TWO new flowers in with gap at each end") { REQUIRE(Solution{}.canPlaceFlowers({ 0, 0, 1, 0, 0 }, 2)); }
+TEST_CASE("Can place TWO new flowers in flowerbed with alternating unoccupied slots") { REQUIRE(Solution{}.canPlaceFlowers({ 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1 }, 2)); }
 
 TEST_CASE("Cannot place TWO new flower in size 1, empty") { REQUIRE_FALSE(Solution{}.canPlaceFlowers({ 0, 0 }, 2)); }
 TEST_CASE("Cannot place TWO new flower in size 2, empty") { REQUIRE_FALSE(Solution{}.canPlaceFlowers({ 0, 0 }, 2)); }
-TEST_CASE("Cannot place TWO new flower in with 1 insufficient gap (not at ends)") {
-  REQUIRE_FALSE(Solution{}.canPlaceFlowers({ 1, 0, 0, 0, 1, 0, 0, 1 }, 2));
-}
+TEST_CASE("Cannot place TWO new flower in with 1 insufficient gap (not at ends)") { REQUIRE_FALSE(Solution{}.canPlaceFlowers({ 1, 0, 0, 0, 1, 0, 0, 1 }, 2)); }
+TEST_CASE("Cannot place TWO new flower in one large gap") { REQUIRE_FALSE(Solution{}.canPlaceFlowers({ 1, 0, 0, 0, 0, 1 }, 2)); }
 
 // >2 FLOWERS PLACED
