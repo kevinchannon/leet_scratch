@@ -75,7 +75,7 @@ private:
       }
 
       ++available_positions;
-      ++start;
+      std::advance(start, 2);
     }
 
     if (is<UNOCCUPIED>(*std::reverse_iterator{ end }) and is<UNOCCUPIED>(*std::next(std::reverse_iterator{ end }))) {
@@ -127,8 +127,12 @@ TEST_CASE("Cannot place ONE new flower gap of two empty slots") { REQUIRE_FALSE(
 
 // TWO FLOWERS PLACED
 TEST_CASE("Can place TWO new flower in size 3, empty") { REQUIRE(Solution{}.canPlaceFlowers({ 0, 0, 0 }, 2)); }
+TEST_CASE("Can place TWO new flower in with 2 gaps (not at ends)") { REQUIRE(Solution{}.canPlaceFlowers({ 1, 0, 0, 0, 1, 0, 0, 0, 1 }, 2)); }
 
 TEST_CASE("Cannot place TWO new flower in size 1, empty") { REQUIRE_FALSE(Solution{}.canPlaceFlowers({ 0, 0 }, 2)); }
 TEST_CASE("Cannot place TWO new flower in size 2, empty") { REQUIRE_FALSE(Solution{}.canPlaceFlowers({ 0, 0 }, 2)); }
+TEST_CASE("Cannot place TWO new flower in with 1 insufficient gap (not at ends)") {
+  REQUIRE_FALSE(Solution{}.canPlaceFlowers({ 1, 0, 0, 0, 1, 0, 0, 1 }, 2));
+}
 
 // >2 FLOWERS PLACED
